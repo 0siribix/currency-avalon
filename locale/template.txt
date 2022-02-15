@@ -43,3 +43,7 @@ Shop=
 This is your own shop, you can't exchange to yourself!=
 You want:=
 Your stock:=
+
+### income.lua ###
+
+You have payment waiting. Please make room in your inventory to receive payment=

@@ -11,7 +11,7 @@ if minetest.get_modpath("default") then
 		}
 	})
 
-	minetest.register_craft({
+--[[	minetest.register_craft({
 		output = "currency:shop",
 		recipe = {
 			{"default:sign_wall"},
@@ -26,6 +26,7 @@ if minetest.get_modpath("default") then
 			{"default:chest"},
 		}
 	})
+]]
 end
 
 minetest.register_craft({
@@ -110,6 +111,14 @@ minetest.register_craft({
 	output = "currency:minegeld_5 2",
 	recipe = {"currency:minegeld_10"},
 })
+
+--[[
+minetest.register_craft({
+	type = "shapeless",
+	output = "currency:minegeld 5",
+	recipe = {"currency:minegeld_5"},
+})
+]]
 
 minetest.register_craft({
 	type = "shapeless",

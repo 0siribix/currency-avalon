@@ -8,11 +8,12 @@ if minetest.global_exists("default") then
 else
 	currency.node_sound_wood_defaults = function() end
 end
+currency.S = minetest.get_translator("currency")
 
 dofile(modpath.."/craftitems.lua")
 minetest.log("info", "[Currency] Craft_items Loaded!")
-dofile(modpath.."/shop.lua")
-minetest.log("info", "[Currency] Shop Loaded!")
+--dofile(modpath.."/shop.lua")
+--minetest.log("info", "[Currency] Shop Loaded!")
 dofile(modpath.."/barter.lua")
 minetest.log("info", "[Currency] Barter Loaded!")
 dofile(modpath.."/safe.lua")

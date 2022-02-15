@@ -1,56 +1,77 @@
 local players_income = {}
+local players_count = 0
 
-local income_enabled = minetest.settings:get_bool("currency.income_enabled", true)
+local income_enabled = minetest.settings:get_bool("currency.income_enabled", false)
 local creative_income_enabled = minetest.settings:get_bool("currency.creative_income_enabled", true)
-local income_item = minetest.settings:get("currency.income_item") or "currency:minegeld_10"
+local income_item = minetest.settings:get("currency.income_item") or "currency:minegeld"
 local income_count = tonumber(minetest.settings:get("currency.income_count")) or 1
-local income_period = tonumber(minetest.settings:get("currency.income_period")) or 720
+local income_period = tonumber(minetest.settings:get("currency.income_period")) or 120
+local inv_full_message = currency.S("You have payment waiting. Please make room in your inventory to receive payment")
 
 if income_enabled then
-	local timer = 0
-	if creative_income_enabled then
-		minetest.register_globalstep(function(dtime)
-			timer = timer + dtime;
-			if timer >= income_period then
-				timer = 0
-				for _, player in ipairs(minetest.get_connected_players()) do
-					local name = player:get_player_name()
-					players_income[name] = income_count
-					minetest.log("info", "[Currency] basic income for "..name)
-				end
-			end
-		end)
-	else
-		minetest.register_globalstep(function(dtime)
-			timer = timer + dtime;
-			if timer >= income_period then
-				timer = 0
-				for _, player in ipairs(minetest.get_connected_players()) do
-					local name = player:get_player_name()
-					local privs = minetest.get_player_privs(name)
-					if not (privs.creative or privs.give) then
-						players_income[name] = income_count
-						minetest.log("info", "[Currency] basic income for "..name)
+	currency.payout = function()
+		local job = minetest.after(income_period, currency.payout)
+		local players_count = 0
+		for name, paycheck in pairs(players_income) do
+			local player = minetest.get_player_by_name(name)
+			if player then
+				players_count = players_count + 1
+				local remainder = players_income[name] % 1
+				local count = players_income[name] - remainder
+				if count > 0 then
+					local inv = player:get_inventory()
+					if inv:room_for_item("main", {name=income_item, count=count}) then
+						inv:add_item("main", {name=income_item, count=count})
+						players_income[name] = remainder
+						minetest.chat_send_player(name, currency.S("You have been paid $@1", count))
+					else
+						minetest.chat_send_player(name, currency.inv_full_message)
 					end
 				end
+			else
+				players_income[name] = nil
+				players_count = players_count - 1
 			end
-		end)
-	end
-
-	local function earn_income(player)
-		if not player or player.is_fake_player then return end
-		local name = player:get_player_name()
-
-		local income_count = players_income[name]
-		if income_count and income_count > 0 then
-			local inv = player:get_inventory()
-			inv:add_item("main", {name=income_item, count=income_count})
-			players_income[name] = nil
-			minetest.log("info", "[Currency] added basic income for "..name.." to inventory")
+		end
+		if players_count == 0 then
+			job:cancel()
 		end
 	end
 
-	minetest.register_on_dignode(function(pos, oldnode, digger) earn_income(digger) end)
-	minetest.register_on_placenode(function(pos, node, placer) earn_income(placer) end)
-	minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv) earn_income(player) end)
+	local function earn_income(player, multiplier)
+		if player then
+			local name = player:get_player_name()
+			if players_income[name] ~= nil then
+				players_income[name] = players_income[name] + (multiplier * income_count)
+			end
+		end
+	end
+
+	minetest.register_on_dignode(function(_, _, digger) earn_income(digger, 0.1) end)
+	minetest.register_on_placenode(function(_, _, placer) earn_income(placer, 1) end)
+	minetest.register_on_craft(function(_, player) earn_income(player, 10) end)
+	minetest.register_on_dieplayer(function(player)
+		if player then
+			local name = player:get_player_name()
+			if players_income[name] ~= nil then players_income[name] = 0 end
+		end
+	end)
+
+	minetest.register_on_joinplayer(function(player)
+		if player then
+			local name = player:get_player_name()
+			if creative_income_enabled or not minetest.is_creative_enabled(name) then
+				players_income[name] = 0
+				if players_count == 0 then minetest.after(income_period, currency.payout) end
+				players_count = players_count + 1
+			end
+		end
+	end)
+
+	minetest.register_on_leaveplayer(function(player)
+		local name = player.get_player_name()
+		if name ~= "" then
+			players_income[name] = nil
+		end
+	end)
 end

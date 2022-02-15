@@ -1,7 +1,8 @@
 currency.barter = {}
 barter = currency.barter -- Kept as a global variable for compatibility
 
-local S = minetest.get_translator("currency")
+local S = currency.S
+local player
 
 barter.chest = {}
 barter.chest.expire_after = tonumber(minetest.settings:get('barter.chest.expireafter')) or 15 * 60
