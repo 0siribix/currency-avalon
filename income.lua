@@ -68,10 +68,11 @@ if income_enabled then
 		end
 	end)
 
-	minetest.register_on_leaveplayer(function(player)
+--[[	minetest.register_on_leaveplayer(function(player)
+
 		local name = player.get_player_name()
 		if name ~= "" then
 			players_income[name] = nil
 		end
-	end)
+	end)]]--
 end
