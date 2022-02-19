@@ -4,7 +4,7 @@ local players_count = 0
 local income_enabled = minetest.settings:get_bool("currency.income_enabled", true)
 local creative_income_enabled = minetest.settings:get_bool("currency.creative_income_enabled", true)
 local income_item = minetest.settings:get("currency.income_item") or "currency:minegeld"
-local income_count = tonumber(minetest.settings:get("currency.income_count")) or 0.1
+local income_count = tonumber(minetest.settings:get("currency.income_count")) or 1
 local income_period = tonumber(minetest.settings:get("currency.income_period")) or 120
 local inv_full_message = currency.S("You have income waiting. Please make room in your inventory to receive income.")
 
