@@ -6,7 +6,7 @@ local creative_income_enabled = minetest.settings:get_bool("currency.creative_in
 local income_item = minetest.settings:get("currency.income_item") or "currency:minegeld"
 local income_count = tonumber(minetest.settings:get("currency.income_count")) or 1
 local income_period = tonumber(minetest.settings:get("currency.income_period")) or 120
-local inv_full_message = currency.S("You have income waiting. Please make room in your inventory to receive income.")
+local inv_full_message = "You have income waiting. Please make room in your inventory to receive income."
 
 if income_enabled then
 	currency.payout = function()
@@ -25,7 +25,7 @@ if income_enabled then
 						players_income[name] = remainder
 						minetest.chat_send_player(name, currency.S("You have earned $@1", count))
 					else
-						minetest.chat_send_player(name, inv_full_message)
+						minetest.chat_send_player(name, currency.S(inv_full_message))
 					end
 				end
 			else
