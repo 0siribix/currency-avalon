@@ -25,7 +25,7 @@ if income_enabled then
 						players_income[name] = remainder
 						minetest.chat_send_player(name, currency.S("You have earned $@1", count))
 					else
-						minetest.chat_send_player(name, currency.inv_full_message)
+						minetest.chat_send_player(name, inv_full_message)
 					end
 				end
 			else
