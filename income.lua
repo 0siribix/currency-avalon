@@ -49,7 +49,7 @@ if income_enabled then
 
 	minetest.register_on_dignode(function(_, _, digger) earn_income(digger, 0.1) end)
 	minetest.register_on_placenode(function(_, _, placer) earn_income(placer, 0.4) end)
-	minetest.register_on_craft(function(_, player) earn_income(player, 10) end)
+	minetest.register_on_craft(function(_, player) earn_income(player, 0.4) end)
 	minetest.register_on_dieplayer(function(player)
 		if player then
 			local name = player:get_player_name()
